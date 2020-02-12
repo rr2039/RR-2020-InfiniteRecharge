@@ -18,10 +18,11 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import frc.robot.intakeSubsystem;
 import frc.robot.hopperSubsystem;
 import frc.robot.aimSubsystem;
-
 
 /**
  * The VM is configured to automatically run this class, and to call the
