@@ -18,6 +18,11 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+import frc.robot.intakeSubsystem;
+import frc.robot.hopperSubsystem;
+import frc.robot.aimSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -114,6 +119,31 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
+    if (false) {
+      intakeSubsystem.intakeOn();
+    }
+    else if (false) {
+      intakeSubsystem.intakeOff();
+    }
+    else if (false) {
+      intakeSubsystem.intakeExtend();
+    }
+    else if (false) {
+      intakeSubsystem.intakeRetract();
+    }
+    else if (false) {
+      hopperSubsystem.hopperOn();
+    }
+    else if (false) {
+      hopperSubsystem.hopperOff();
+    }
+    else if (false) {
+      aimSubsystem.autoAimOn();
+    }
+    else if (false) {
+      aimSubsystem.autoAimOff();
+    }
+  
   }
 
   /**
