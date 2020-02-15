@@ -23,6 +23,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import frc.robot.intakeSubsystem;
 import frc.robot.hopperSubsystem;
 import frc.robot.aimSubsystem;
+import frc.robot.Button;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -45,6 +47,7 @@ public class Robot extends TimedRobot {
   //private final DifferentialDrive driveTrain = new DifferentialDrive(leftMotor, rightMotor);
   private final Joystick driveStick = new Joystick(0);
   DifferentialDrive driveTrain;
+  private final Button buttonA = new Button(0, 1)
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -119,10 +122,10 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
-    if (false) {
+    if (buttonA.isPressed() && !(buttonA.state)) {
       intakeSubsystem.intakeOn();
     }
-    else if (false) {
+    else if (buttonA.isPressed() && buttonA.state) {
       intakeSubsystem.intakeOff();
     }
     else if (false) {

@@ -6,6 +6,7 @@ public class Button {
     private int controller_id;
     private int axis_id;
     private Joystick axisController;
+    private boolean state;
     
     //Button IDs
     public static final int A = 1;
@@ -22,8 +23,16 @@ public class Button {
         this.controller_id = controller_id;
         this.axis_id = axis_id;
         this.axisController = new Joystick(this.controller_id);
+        this.state;
+        state = false;
     }
    public boolean isPressed() {
     return axisController.getRawButton(axis_id);
+    if !(state) {
+        state = true;
+    }
+    else-if (state) {
+        state = false;
+    }
    }
 }
