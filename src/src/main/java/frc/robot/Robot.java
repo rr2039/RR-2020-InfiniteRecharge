@@ -122,7 +122,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
-    if (buttonA.isPressed() && !(buttonA.state)) {
+    if (buttonA.isPressed() && (!buttonA.state)) {
       intakeSubsystem.intakeOn();
     }
     else if (buttonA.isPressed() && buttonA.state) {

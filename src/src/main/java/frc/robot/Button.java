@@ -23,15 +23,14 @@ public class Button {
         this.controller_id = controller_id;
         this.axis_id = axis_id;
         this.axisController = new Joystick(this.controller_id);
-        this.state;
-        state = false;
+        this.state = false;
     }
    public boolean isPressed() {
     return axisController.getRawButton(axis_id);
-    if !(state) {
+    if (state == false) {
         state = true;
     }
-    else-if (state) {
+    else if (state) {
         state = false;
     }
    }
