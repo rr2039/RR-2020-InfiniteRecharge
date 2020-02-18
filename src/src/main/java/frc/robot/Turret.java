@@ -21,10 +21,12 @@ public class Turret {
         elevationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     }
 
-    public void raise(double input) {
-        elevationMotor.set(input*elevationMultiplier);
+    public void raise() {
         pitchSolenoid.set(true);
-        
+    }
+
+    public void lower() {
+        pitchSolenoid.set(false);
     }
 
     public void rotateByJoystick(double input) {
