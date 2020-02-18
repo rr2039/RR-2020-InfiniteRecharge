@@ -126,32 +126,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
     Scheduler.getInstance().run();
-    if (buttonA.state) {
-      intakeSubsystem.intakeOn();
-      System.out.print("Test Successful");
-    }
-    else if (!buttonA.state) {
-      intakeSubsystem.intakeOff();
-      System.out.print("Test Successful");
-    }
-    else if (false) {
-      intakeSubsystem.intakeExtend();
-    }
-    else if (false) {
-      intakeSubsystem.intakeRetract();
-    }
-    else if (false) {
-      hopperSubsystem.hopperOn();
-    }
-    else if (false) {
-      hopperSubsystem.hopperOff();
-    }
-    else if (false) {
-      aimSubsystem.autoAimOn();
-    }
-    else if (false) {
-      aimSubsystem.autoAimOff();
-    }
+
   
   }
 
