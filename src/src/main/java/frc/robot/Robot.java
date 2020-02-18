@@ -8,10 +8,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
 import com.revrobotics.CANSparkMax;
@@ -47,7 +49,8 @@ public class Robot extends TimedRobot {
   //private final DifferentialDrive driveTrain = new DifferentialDrive(leftMotor, rightMotor);
   private final Joystick driveStick = new Joystick(0);
   DifferentialDrive driveTrain;
-  private final Button buttonA = new Button(0, 1)
+  boolean someBoolean = false;
+  private final Button buttonA = new Button(0, 1);
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -122,11 +125,14 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
-    if (buttonA.isPressed() && (!buttonA.state)) {
+    Scheduler.getInstance().run();
+    if (buttonA.state) {
       intakeSubsystem.intakeOn();
+      System.out.print("Test Successful");
     }
-    else if (buttonA.isPressed() && buttonA.state) {
+    else if (!buttonA.state) {
       intakeSubsystem.intakeOff();
+      System.out.print("Test Successful");
     }
     else if (false) {
       intakeSubsystem.intakeExtend();
