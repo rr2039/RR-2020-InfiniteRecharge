@@ -38,10 +38,6 @@ public class Turret {
         return (rotationMotor.getSelectedSensorPosition()/4096)*360;
     }
 
-    public void setRotationDegrees(double degrees) {
-        rotationMotor.set(ControlMode.Position, degreesToQuadrature(degrees, 1));
-    }
-
     public void resetRotation() {
         rotationMotor.set(ControlMode.Position, degreesToQuadrature(0, 1));
     }
