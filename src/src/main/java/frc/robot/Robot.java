@@ -8,19 +8,15 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import frc.robot.intakeSubsystem;
 import frc.robot.hopperSubsystem;
@@ -49,8 +45,9 @@ public class Robot extends TimedRobot {
   //private final DifferentialDrive driveTrain = new DifferentialDrive(leftMotor, rightMotor);
   private final Joystick driveStick = new Joystick(0);
   DifferentialDrive driveTrain;
-  boolean someBoolean = false;
-  private final Button buttonA = new Button(0, 1);
+  private final Button buttonA = new Button();
+  private final Button buttonB = new Button();
+  private final Button buttonX = new Button();
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -61,7 +58,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    leftFrontMotor = new CANSparkMax(1, MotorType.kBrushless);
+    leftFrontMotor = new CANSparkMax(1, MotorType.kBrushed);
     leftBackMotor = new CANSparkMax(2, MotorType.kBrushless);
 
     rightFrontMotor = new CANSparkMax(3, MotorType.kBrushless);
@@ -125,36 +122,51 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
-    Scheduler.getInstance().run();
-    if (buttonA.state) {
-      intakeSubsystem.intakeOn();
-      System.out.print("Test Successful");
+    if (driveStick.getRawButtonPressed(Button.A)) {
+      buttonA.state = !buttonA.state;
     }
-    else if (!buttonA.state) {
+    if (driveStick.getRawButtonPressed(Button.B)) {
+      buttonB.state = !buttonB.state;
+    }
+    if (driveStick.getRawButtonPressed(Button.X)) {
+      buttonX.state = !buttonX.state;
+    }
+    if (!buttonA.state){
       intakeSubsystem.intakeOff();
-      System.out.print("Test Successful");
+      SmartDashboard.putBoolean("IntakeON", false);
     }
-    else if (false) {
+    else if (buttonA.state){
+      intakeSubsystem.intakeOn();
+      SmartDashboard.putBoolean("IntakeON", true);
+    }
+    if (driveStick.getRawButton(Button.RIGHT_BUMPER)) {
       intakeSubsystem.intakeExtend();
+      SmartDashboard.putBoolean("IntakeEXTEND", true);
+      SmartDashboard.putBoolean("IntakeRETRACT", false);
     }
-    else if (false) {
+    else if (driveStick.getRawButton(Button.LEFT_BUMPER)) {
       intakeSubsystem.intakeRetract();
+      SmartDashboard.putBoolean("IntakeRETRACT", true);
+      SmartDashboard.putBoolean("IntakeEXTEND", false);
     }
-    else if (false) {
+    if (buttonX.state) {
       hopperSubsystem.hopperOn();
+      SmartDashboard.putBoolean("HopperON", true);
     }
-    else if (false) {
+    else if (!buttonX.state) {
       hopperSubsystem.hopperOff();
+      SmartDashboard.putBoolean("HopperON", false);
     }
-    else if (false) {
+    if (buttonB.state) {
       aimSubsystem.autoAimOn();
+      SmartDashboard.putBoolean("AutoAimON", true);
     }
-    else if (false) {
+    else if (!buttonB.state) {
       aimSubsystem.autoAimOff();
+      SmartDashboard.putBoolean("AutoAimON", false);
     }
-  
   }
-
+  
   /**
    * This function is called periodically during test mode.
    */
