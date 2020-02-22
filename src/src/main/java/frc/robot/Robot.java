@@ -122,6 +122,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
+
+    //Replace these Button Stubs with real code if needed
     if (driveStick.getRawButtonPressed(Button.A)) {
       buttonA.state = !buttonA.state;
     }
