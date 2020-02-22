@@ -58,7 +58,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    leftFrontMotor = new CANSparkMax(1, MotorType.kBrushed);
+    leftFrontMotor = new CANSparkMax(1, MotorType.kBrushless);
     leftBackMotor = new CANSparkMax(2, MotorType.kBrushless);
 
     rightFrontMotor = new CANSparkMax(3, MotorType.kBrushless);
