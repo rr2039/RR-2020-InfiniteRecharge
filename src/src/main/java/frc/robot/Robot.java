@@ -21,7 +21,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
 import frc.robot.intakeSubsystem;
 import frc.robot.hopperSubsystem;
 import frc.robot.aimSubsystem;
@@ -48,7 +47,9 @@ public class Robot extends TimedRobot {
   private CANSparkMax rightBackMotor;
   //private final DifferentialDrive driveTrain = new DifferentialDrive(leftMotor, rightMotor);
   private final Joystick driveStick = new Joystick(0);
+  private final Joystick operatorJoy = new Joystick(1);
   DifferentialDrive driveTrain;
+  Turret turret;
   boolean someBoolean = false;
   private final Button buttonA = new Button(0, 1);
   /**
@@ -125,9 +126,10 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
+    turret.rotateByJoystick(operatorJoy.getRawAxis(0));
     Scheduler.getInstance().run();
-
-  
+    
+     
   }
 
   /**
