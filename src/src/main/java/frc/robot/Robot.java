@@ -22,6 +22,7 @@ import frc.robot.intakeSubsystem;
 import frc.robot.hopperSubsystem;
 import frc.robot.aimSubsystem;
 import frc.robot.Button;
+import frc.robot.hopperState;
 
 
 /**
@@ -48,6 +49,12 @@ public class Robot extends TimedRobot {
   private final Button buttonA = new Button();
   private final Button buttonB = new Button();
   private final Button buttonX = new Button();
+  private hopperState state = hopperState.Init;
+  private boolean sensorOne = false;
+  private boolean sensorOnePrime = sensorOne;
+  private boolean sensorTwo = false;
+  private boolean sensorTwoPrime = sensorTwo;
+  private int ballCount = 0;
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -149,14 +156,14 @@ public class Robot extends TimedRobot {
       SmartDashboard.putBoolean("IntakeRETRACT", true);
       SmartDashboard.putBoolean("IntakeEXTEND", false);
     }
-    if (buttonX.state) {
+/*    if (buttonX.state) {
       hopperSubsystem.hopperOn();
       SmartDashboard.putBoolean("HopperON", true);
     }
     else if (!buttonX.state) {
       hopperSubsystem.hopperOff();
       SmartDashboard.putBoolean("HopperON", false);
-    }
+    } */
     if (buttonB.state) {
       aimSubsystem.autoAimOn();
       SmartDashboard.putBoolean("AutoAimON", true);
@@ -165,7 +172,39 @@ public class Robot extends TimedRobot {
       aimSubsystem.autoAimOff();
       SmartDashboard.putBoolean("AutoAimON", false);
     }
+
+/* State Machine Logic Hopper System */
+    if (sensorOnePrime != sensorOne) {
+      if (sensorOne){
+        ballCount++;
+        state = state.nextState();
+      }
+      sensorOnePrime = sensorOne;
+    }
+    if (sensorTwoPrime != sensorTwo) {
+      if (sensorTwo) {
+        state = state.nextState();
+      }
+      if (!sensorTwo) {
+        ballCount--;
+        state = state.nextState();
+      }
+      sensorTwoPrime = sensorTwo;
+    }
+    if (ballCount > 0 && state == hopperState.Init) {
+      state = state.nextState();
+    }
+    switch (state) {
+      case Init:
+        hopperSubsystem.hopperOff();
+      case Hot:
+        hopperSubsystem.hopperOn();
+      case Armed:
+        hopperSubsystem.hopperOff();
+      case Shoot:
+    }
   }
+
   
   /**
    * This function is called periodically during test mode.
