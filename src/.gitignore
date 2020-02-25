@@ -108,7 +108,6 @@ Temporary Items
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-venderdeps/*
 
 ### Windows ###
 # Windows thumbnail cache files
