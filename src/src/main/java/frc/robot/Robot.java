@@ -48,7 +48,9 @@ public class Robot extends TimedRobot {
   private final Button buttonA = new Button();
   private final Button buttonB = new Button();
   private final Button buttonX = new Button();
-  Turret turret;
+  private final Button povUp = new Button();
+  private final Button povDown = new Button();
+  Turret Turret;
   boolean someBoolean = false;
   /**
    * This function is run when the robot is first started up and should be
@@ -135,6 +137,12 @@ public class Robot extends TimedRobot {
     if (driveStick.getRawButtonPressed(Button.X)) {
       buttonX.state = !buttonX.state;
     }
+    if (operatorJoy.getPOV() == 0) {
+      povUp.state = !povUp.state;
+    }
+    if (operatorJoy.getPOV() == 3) {
+      povDown.state = !povDown.state;
+    }
     if (!buttonA.state){
       intakeSubsystem.intakeOff();
       SmartDashboard.putBoolean("IntakeON", false);
@@ -169,7 +177,13 @@ public class Robot extends TimedRobot {
       aimSubsystem.autoAimOff();
       SmartDashboard.putBoolean("AutoAimON", false);
     }
-    turret.rotateByJoystick(operatorJoy.getRawAxis(0));
+    if (povUp.state) {
+      Turret.raise();
+    }
+    if (povDown.state) {
+      Turret.lower();
+    }
+    Turret.rotateByJoystick(operatorJoy.getRawAxis(0));
     
      
   }
