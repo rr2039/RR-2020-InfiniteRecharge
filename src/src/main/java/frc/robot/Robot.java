@@ -179,9 +179,11 @@ public class Robot extends TimedRobot {
     }
     if (povUp.state) {
       Turret.raise();
+      SmartDashboard.putString("TurretElevation", "Up");
     }
     if (povDown.state) {
       Turret.lower();
+      SmartDashboard.putString("TurretElevation", "Down");
     }
     Turret.rotateByJoystick(operatorJoy.getRawAxis(0));
     
