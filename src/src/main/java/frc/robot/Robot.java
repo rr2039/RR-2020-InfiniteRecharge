@@ -17,7 +17,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
-
 import frc.robot.intakeSubsystem;
 import frc.robot.hopperSubsystem;
 import frc.robot.aimSubsystem;
@@ -44,10 +43,13 @@ public class Robot extends TimedRobot {
   private CANSparkMax rightBackMotor;
   //private final DifferentialDrive driveTrain = new DifferentialDrive(leftMotor, rightMotor);
   private final Joystick driveStick = new Joystick(0);
+  private final Joystick operatorJoy = new Joystick(1);
   DifferentialDrive driveTrain;
   private final Button buttonA = new Button();
   private final Button buttonB = new Button();
   private final Button buttonX = new Button();
+  Turret turret;
+  boolean someBoolean = false;
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -167,6 +169,9 @@ public class Robot extends TimedRobot {
       aimSubsystem.autoAimOff();
       SmartDashboard.putBoolean("AutoAimON", false);
     }
+    turret.rotateByJoystick(operatorJoy.getRawAxis(0));
+    
+     
   }
   
   /**

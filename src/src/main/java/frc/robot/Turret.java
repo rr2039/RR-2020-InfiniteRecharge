@@ -7,44 +7,44 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Turret {
     private double rotationMultiplier;
-    private double elevationMultiplier;
+    private static final double gearRatio = 1;
 
     private static WPI_TalonSRX rotationMotor = new WPI_TalonSRX(0);
     private static WPI_TalonSRX elevationMotor = new WPI_TalonSRX(0);
 
     Solenoid pitchSolenoid = new Solenoid(1);
 
-    public Turret(double rotationMultiplier, double elevationMultiplier) {
+    public Turret(double rotationMultiplier) {
         this.rotationMultiplier = rotationMultiplier;
-        this.elevationMultiplier = elevationMultiplier;
         rotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
         elevationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     }
 
-    public void raise(double input) {
-        elevationMotor.set(input*elevationMultiplier);
+    public void raise() {
         pitchSolenoid.set(true);
-        
+    }
+
+    public void lower() {
+        pitchSolenoid.set(false);
     }
 
     public void rotateByJoystick(double input) {
         rotationMotor.set(input*rotationMultiplier);
     }
 
+    public void rotateByDegrees(double degrees) {
+        rotationMotor.set(ControlMode.Position, degreesToQuadrature(degrees));
+    }
 
-    public int getTurretRotation(double gearRatio) {
+    public int getTurretRotation() {
         return (rotationMotor.getSelectedSensorPosition()/4096)*360;
     }
 
-    public void setRotationDegrees(double degrees) {
-        rotationMotor.set(ControlMode.Position, degreesToQuadrature(degrees, 1));
-    }
-
     public void resetRotation() {
-        rotationMotor.set(ControlMode.Position, degreesToQuadrature(0, 1));
+        rotationMotor.set(ControlMode.Position, degreesToQuadrature(0));
     }
 
-    public double degreesToQuadrature(double degrees, double gearRatio) {
+    public double degreesToQuadrature(double degrees) {
         return (degrees/360)*4096*gearRatio;
     }
 }
