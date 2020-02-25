@@ -17,6 +17,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.AnalogInput;
 
 import frc.robot.intakeSubsystem;
 import frc.robot.hopperSubsystem;
@@ -43,17 +44,18 @@ public class Robot extends TimedRobot {
 
   private CANSparkMax rightFrontMotor;
   private CANSparkMax rightBackMotor;
-  //private final DifferentialDrive driveTrain = new DifferentialDrive(leftMotor, rightMotor);
   private final Joystick driveStick = new Joystick(0);
   DifferentialDrive driveTrain;
   private final Button buttonA = new Button();
   private final Button buttonB = new Button();
   private final Button buttonX = new Button();
   private hopperState state = hopperState.Init;
-  private boolean sensorOne = false;
-  private boolean sensorOnePrime = sensorOne;
-  private boolean sensorTwo = false;
-  private boolean sensorTwoPrime = sensorTwo;
+  private AnalogInput sensorIntake = new AnalogInput(0);
+  private AnalogInput sensorOuttake = new AnalogInput(1);
+  private boolean sensorIntakeBool = false;
+  private boolean sensorIntakeShadow = sensorIntakeBool;
+  private boolean sensorOuttakeBool = false;
+  private boolean sensorOuttakeShadow = sensorOuttakeBool;
   private int ballCount = 0;
   /**
    * This function is run when the robot is first started up and should be
@@ -128,6 +130,18 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    if (sensorIntake.getAverageValue() > 0.5) {
+      sensorIntakeBool = true;
+    }
+    else {
+      sensorIntakeBool = false;
+    }
+    if (sensorOuttake.getAverageVoltage() > 0.5) {
+      sensorOuttakeBool = true;
+    }
+    else {
+      sensorOuttakeBool = false;
+    }
     driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
     if (driveStick.getRawButtonPressed(Button.A)) {
       buttonA.state = !buttonA.state;
@@ -156,14 +170,14 @@ public class Robot extends TimedRobot {
       SmartDashboard.putBoolean("IntakeRETRACT", true);
       SmartDashboard.putBoolean("IntakeEXTEND", false);
     }
-/*    if (buttonX.state) {
+    if (buttonX.state) {
       hopperSubsystem.hopperOn();
       SmartDashboard.putBoolean("HopperON", true);
     }
     else if (!buttonX.state) {
       hopperSubsystem.hopperOff();
       SmartDashboard.putBoolean("HopperON", false);
-    } */
+    }
     if (buttonB.state) {
       aimSubsystem.autoAimOn();
       SmartDashboard.putBoolean("AutoAimON", true);
@@ -174,22 +188,22 @@ public class Robot extends TimedRobot {
     }
 
 /* State Machine Logic Hopper System */
-    if (sensorOnePrime != sensorOne) {
-      if (sensorOne){
+    if (sensorIntakeShadow != sensorIntakeBool) {
+      if (sensorIntakeBool){
         ballCount++;
         state = state.nextState();
       }
-      sensorOnePrime = sensorOne;
+      sensorIntakeShadow = sensorIntakeBool;
     }
-    if (sensorTwoPrime != sensorTwo) {
-      if (sensorTwo) {
+    if (sensorOuttakeShadow != sensorOuttakeBool) {
+      if (sensorOuttakeBool) {
         state = state.nextState();
       }
-      if (!sensorTwo) {
+      if (!sensorOuttakeBool) {
         ballCount--;
         state = state.nextState();
       }
-      sensorTwoPrime = sensorTwo;
+      sensorOuttakeShadow = sensorOuttakeBool;
     }
     if (ballCount > 0 && state == hopperState.Init) {
       state = state.nextState();
@@ -201,6 +215,9 @@ public class Robot extends TimedRobot {
         hopperSubsystem.hopperOn();
       case Armed:
         hopperSubsystem.hopperOff();
+        if (driveStick.getRawButton(Button.Y)) {
+          state = state.nextState();
+        }
       case Shoot:
     }
   }
