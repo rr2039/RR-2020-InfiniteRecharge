@@ -155,10 +155,12 @@ public class Robot extends TimedRobot {
     }
     if (buttonX.state) {
       hopperSubsystem.hopperOn();
+      hopperSubsystem.feederOn();
       SmartDashboard.putBoolean("HopperON", true);
     }
     else if (!buttonX.state) {
       hopperSubsystem.hopperOff();
+      hopperSubsystem.feederOff();
       SmartDashboard.putBoolean("HopperON", false);
     }
     if (buttonB.state) {
