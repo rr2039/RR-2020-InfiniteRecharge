@@ -45,9 +45,9 @@ public class Robot extends TimedRobot {
   private final Joystick driveStick = new Joystick(0);
   private final Joystick operatorJoy = new Joystick(1);
   DifferentialDrive driveTrain;
-  private final Button buttonA = new Button();
-  private final Button buttonB = new Button();
-  private final Button buttonX = new Button();
+  private final Button button3 = new Button();
+  private final Button button6 = new Button();
+  private final Button button2 = new Button();
   private final Button button11 = new Button();
   private final Button button10 = new Button();
   Turret turret;
@@ -128,26 +128,26 @@ public class Robot extends TimedRobot {
     driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
 
     //Replace these Button Stubs with real code if needed
-    if (driveStick.getRawButtonPressed(Button.A)) {
-      buttonA.state = !buttonA.state;
+    if (driveStick.getRawButtonPressed(Button3)) {
+      button3.state = !button3.state;
     }
-    if (driveStick.getRawButtonPressed(Button.B)) {
-      buttonB.state = !buttonB.state;
+    if (driveStick.getRawButtonPressed(Button6)) {
+      button6.state = !button6.state;
     }
-    if (driveStick.getRawButtonPressed(Button.X)) {
-      buttonX.state = !buttonX.state;
+    if (driveStick.getRawButtonPressed(Button2)) {
+      button2.state = !button2.state;
     }
     if (operatorJoy.getRawButtonPressed(11)) {
       button11.state = !button11.state;
     }
-    if (operatorJoy.getRawButtonPressed(12)) {
+    if (operatorJoy.getRawButtonPressed(10)) {
       button10.state = !button10.state;
     }
-    if (!buttonA.state){
+    if (button3.state){
       intakeSubsystem.intakeOff();
       SmartDashboard.putBoolean("IntakeON", false);
     }
-    else if (buttonA.state){
+    else if (!button3.state){
       intakeSubsystem.intakeOn();
       SmartDashboard.putBoolean("IntakeON", true);
     }
@@ -161,21 +161,21 @@ public class Robot extends TimedRobot {
       SmartDashboard.putBoolean("IntakeRETRACT", true);
       SmartDashboard.putBoolean("IntakeEXTEND", false);
     }
-    if (buttonX.state) {
+    if (button2.state) {
       hopperSubsystem.hopperOn();
       hopperSubsystem.feederOn();
       SmartDashboard.putBoolean("HopperON", true);
     }
-    else if (!buttonX.state) {
+    else if (!button2.state) {
       hopperSubsystem.hopperOff();
       hopperSubsystem.feederOff();
       SmartDashboard.putBoolean("HopperON", false);
     }
-    if (buttonB.state) {
+    if (button6.state) {
       aimSubsystem.autoAimOn();
       SmartDashboard.putBoolean("AutoAimON", true);
     }
-    else if (!buttonB.state) {
+    else if (!button6.state) {
       aimSubsystem.autoAimOff();
       SmartDashboard.putBoolean("AutoAimON", false);
       turret.rotateByJoystick(operatorJoy.getRawAxis(0));
