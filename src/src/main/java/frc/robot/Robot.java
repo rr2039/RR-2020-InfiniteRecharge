@@ -45,10 +45,10 @@ public class Robot extends TimedRobot {
   private final Joystick driveStick = new Joystick(0);
   private final Joystick operatorJoy = new Joystick(1);
   DifferentialDrive driveTrain;
-  private final Button buttonA = new Button();
-  private final Button buttonB = new Button();
-  private final Button buttonX = new Button();
-  Turret turret;
+  private final Button button3 = new Button();
+  private final Button button6 = new Button();
+  private final Button button2 = new Button();
+  Turret turret = new Turret(1);
   boolean someBoolean = false;
   /**
    * This function is run when the robot is first started up and should be
@@ -126,52 +126,52 @@ public class Robot extends TimedRobot {
     driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
 
     //Replace these Button Stubs with real code if needed
-    if (driveStick.getRawButtonPressed(Button.A)) {
-      buttonA.state = !buttonA.state;
+    if (operatorJoy.getRawButtonPressed(3)) {
+      button3.state = !button3.state;
     }
-    if (driveStick.getRawButtonPressed(Button.B)) {
-      buttonB.state = !buttonB.state;
+    if (operatorJoy.getRawButtonPressed(6)) {
+      button6.state = !button6.state;
     }
-    if (driveStick.getRawButtonPressed(Button.X)) {
-      buttonX.state = !buttonX.state;
+    if (operatorJoy.getRawButtonPressed(2)) {
+      button2.state = !button2.state;
     }
-    if (!buttonA.state){
+    if (button3.state){
       intakeSubsystem.intakeOff();
-      SmartDashboard.putBoolean("IntakeON", false);
-    }
-    else if (buttonA.state){
-      intakeSubsystem.intakeOn();
-      SmartDashboard.putBoolean("IntakeON", true);
-    }
-    if (driveStick.getRawButton(Button.RIGHT_BUMPER)) {
-      intakeSubsystem.intakeExtend();
-      SmartDashboard.putBoolean("IntakeEXTEND", true);
-      SmartDashboard.putBoolean("IntakeRETRACT", false);
-    }
-    else if (driveStick.getRawButton(Button.LEFT_BUMPER)) {
       intakeSubsystem.intakeRetract();
-      SmartDashboard.putBoolean("IntakeRETRACT", true);
-      SmartDashboard.putBoolean("IntakeEXTEND", false);
+      SmartDashboard.putBoolean("IntakeON", false);
+      SmartDashboard.putBoolean("IntakeExtended", false);
     }
-    if (buttonX.state) {
+    else if (!button3.state){
+      intakeSubsystem.intakeOn();
+      intakeSubsystem.intakeExtend();
+      SmartDashboard.putBoolean("IntakeON", true);
+      SmartDashboard.putBoolean("IntakeExtended", true);
+    }
+    if (button2.state) {
       hopperSubsystem.hopperOn();
       SmartDashboard.putBoolean("HopperON", true);
     }
-    else if (!buttonX.state) {
+    else if (!button2.state) {
       hopperSubsystem.hopperOff();
       SmartDashboard.putBoolean("HopperON", false);
     }
-    if (buttonB.state) {
+    if (button6.state) {
       aimSubsystem.autoAimOn();
       SmartDashboard.putBoolean("AutoAimON", true);
     }
-    else if (!buttonB.state) {
+    else if (!button6.state) {
       aimSubsystem.autoAimOff();
       SmartDashboard.putBoolean("AutoAimON", false);
+      turret.rotateByJoystick(operatorJoy.getRawAxis(0));
+      if (operatorJoy.getRawButtonPressed(11)) {
+        turret.raise();
+        SmartDashboard.putString("Turret", "Raised");
+      }
+      else if(operatorJoy.getRawButtonPressed(10)) {
+        turret.lower();
+        SmartDashboard.putString("Turret", "Lowered");
+      }
     }
-    turret.rotateByJoystick(operatorJoy.getRawAxis(0));
-    
-     
   }
   
   /**
@@ -180,4 +180,8 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
   }
+
+  public void rotateByJoystick(double input) {
+    ;
+}
 }
