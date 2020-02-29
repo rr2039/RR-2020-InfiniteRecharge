@@ -48,8 +48,6 @@ public class Robot extends TimedRobot {
   private final Button button3 = new Button();
   private final Button button6 = new Button();
   private final Button button2 = new Button();
-  private final Button button11 = new Button();
-  private final Button button10 = new Button();
   Turret turret = new Turret(1);
   boolean someBoolean = false;
   /**
@@ -128,50 +126,34 @@ public class Robot extends TimedRobot {
     driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
 
     //Replace these Button Stubs with real code if needed
-    if (driveStick.getRawButtonPressed(3)) {
+    if (operatorJoy.getRawButtonPressed(3)) {
       button3.state = !button3.state;
     }
-    if (driveStick.getRawButtonPressed(6)) {
+    if (operatorJoy.getRawButtonPressed(6)) {
       button6.state = !button6.state;
     }
-    if (driveStick.getRawButtonPressed(2)) {
+    if (operatorJoy.getRawButtonPressed(2)) {
       button2.state = !button2.state;
-    }
-    if (operatorJoy.getRawButtonPressed(11)) {
-      button11.state = !button11.state;
-    }
-    if (operatorJoy.getRawButtonPressed(10)) {
-      button10.state = !button10.state;
     }
     if (button3.state){
       intakeSubsystem.intakeOff();
+      intakeSubsystem.intakeRetract();
       SmartDashboard.putBoolean("IntakeON", false);
+      SmartDashboard.putBoolean("IntakeExtended", false);
     }
     else if (!button3.state){
       intakeSubsystem.intakeOn();
-      SmartDashboard.putBoolean("IntakeON", true);
-    }
-    if (driveStick.getRawButton(Button.RIGHT_BUMPER)) {
       intakeSubsystem.intakeExtend();
-      SmartDashboard.putBoolean("IntakeEXTEND", true);
-      SmartDashboard.putBoolean("IntakeRETRACT", false);
-    }
-    else if (driveStick.getRawButton(Button.LEFT_BUMPER)) {
-      intakeSubsystem.intakeRetract();
-      SmartDashboard.putBoolean("IntakeRETRACT", true);
-      SmartDashboard.putBoolean("IntakeEXTEND", false);
+      SmartDashboard.putBoolean("IntakeON", true);
+      SmartDashboard.putBoolean("IntakeExtended", true);
     }
     if (button2.state) {
       hopperSubsystem.hopperOn();
-      hopperSubsystem.feederOn();
       SmartDashboard.putBoolean("HopperON", true);
-      SmartDashboard.putBoolean("FeederON", true);
     }
     else if (!button2.state) {
       hopperSubsystem.hopperOff();
-      hopperSubsystem.feederOff();
       SmartDashboard.putBoolean("HopperON", false);
-      SmartDashboard.putBoolean("FeederOFF", false);
     }
     if (button6.state) {
       aimSubsystem.autoAimOn();
@@ -181,11 +163,11 @@ public class Robot extends TimedRobot {
       aimSubsystem.autoAimOff();
       SmartDashboard.putBoolean("AutoAimON", false);
       turret.rotateByJoystick(operatorJoy.getRawAxis(0));
-      if (button11.state) {
+      if (operatorJoy.getRawButtonPressed(11)) {
         turret.raise();
         SmartDashboard.putString("Turret", "Raised");
       }
-      else if(button10.state) {
+      else if(operatorJoy.getRawButtonPressed(10)) {
         turret.lower();
         SmartDashboard.putString("Turret", "Lowered");
       }
