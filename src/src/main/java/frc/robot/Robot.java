@@ -165,11 +165,13 @@ public class Robot extends TimedRobot {
       hopperSubsystem.hopperOn();
       hopperSubsystem.feederOn();
       SmartDashboard.putBoolean("HopperON", true);
+      SmartDashboard.putBoolean("FeederON", true);
     }
     else if (!button2.state) {
       hopperSubsystem.hopperOff();
       hopperSubsystem.feederOff();
       SmartDashboard.putBoolean("HopperON", false);
+      SmartDashboard.putBoolean("FeederOFF", false);
     }
     if (button6.state) {
       aimSubsystem.autoAimOn();
@@ -181,9 +183,11 @@ public class Robot extends TimedRobot {
       turret.rotateByJoystick(operatorJoy.getRawAxis(0));
       if (button11.state) {
         turret.raise();
+        SmartDashboard.putString("Turret", "Raised");
       }
       if(button10.state) {
         turret.lower();
+        SmartDashboard.putString("Turret", "Lowered");
       }
     }
   }
