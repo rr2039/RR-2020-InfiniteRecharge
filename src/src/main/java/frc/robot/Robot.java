@@ -128,13 +128,13 @@ public class Robot extends TimedRobot {
     driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
 
     //Replace these Button Stubs with real code if needed
-    if (driveStick.getRawButtonPressed(Button3)) {
+    if (driveStick.getRawButtonPressed(3)) {
       button3.state = !button3.state;
     }
-    if (driveStick.getRawButtonPressed(Button6)) {
+    if (driveStick.getRawButtonPressed(6)) {
       button6.state = !button6.state;
     }
-    if (driveStick.getRawButtonPressed(Button2)) {
+    if (driveStick.getRawButtonPressed(2)) {
       button2.state = !button2.state;
     }
     if (operatorJoy.getRawButtonPressed(11)) {
