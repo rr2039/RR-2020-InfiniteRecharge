@@ -1,5 +1,5 @@
 package frc.robot;
 
 public enum hopperState{
-    Init, Hot, Armed, Shoot
+    INIT, HOT, ARMED, SHOOT
 }
