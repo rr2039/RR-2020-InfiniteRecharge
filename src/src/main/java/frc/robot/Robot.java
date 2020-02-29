@@ -48,6 +48,8 @@ public class Robot extends TimedRobot {
   private final Button buttonA = new Button();
   private final Button buttonB = new Button();
   private final Button buttonX = new Button();
+  private final Button button11 = new Button();
+  private final Button button10 = new Button();
   Turret turret;
   boolean someBoolean = false;
   /**
@@ -135,6 +137,12 @@ public class Robot extends TimedRobot {
     if (driveStick.getRawButtonPressed(Button.X)) {
       buttonX.state = !buttonX.state;
     }
+    if (operatorJoy.getRawButtonPressed(11)) {
+      button11.state = !button11.state;
+    }
+    if (operatorJoy.getRawButtonPressed(12)) {
+      button10.state = !button10.state;
+    }
     if (!buttonA.state){
       intakeSubsystem.intakeOff();
       SmartDashboard.putBoolean("IntakeON", false);
@@ -171,6 +179,13 @@ public class Robot extends TimedRobot {
       aimSubsystem.autoAimOff();
       SmartDashboard.putBoolean("AutoAimON", false);
     }
+    if (button11.state) {
+      turret.raise();
+    }
+    if(button10.state) {
+      turret.lower();
+    }
+    else if (!button11.state);
     turret.rotateByJoystick(operatorJoy.getRawAxis(0));
     
      
