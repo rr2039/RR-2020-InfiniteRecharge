@@ -9,7 +9,7 @@ public class Turret {
     private double rotationMultiplier;
     private static final double gearRatio = 1;
 
-    private static WPI_TalonSRX rotationMotor = new WPI_TalonSRX(0);
+    private static WPI_TalonSRX rotationMotor = new WPI_TalonSRX(24);
     private static WPI_TalonSRX elevationMotor = new WPI_TalonSRX(0);
 
     Solenoid pitchSolenoid = new Solenoid(1);
@@ -33,7 +33,7 @@ public class Turret {
     }
 
     public void rotateByDegrees(double degrees) {
-        rotationMotor.set(ControlMode.Position, degreesToQuadrature(degrees));
+       rotationMotor.set(ControlMode.Position, degreesToQuadrature(degrees));
     }
 
     public int getTurretRotation() {

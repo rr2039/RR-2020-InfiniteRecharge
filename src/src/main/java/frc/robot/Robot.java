@@ -50,7 +50,7 @@ public class Robot extends TimedRobot {
   private final Button button2 = new Button();
   private final Button button11 = new Button();
   private final Button button10 = new Button();
-  Turret turret;
+  Turret turret = new Turret(1);
   boolean someBoolean = false;
   /**
    * This function is run when the robot is first started up and should be
@@ -185,7 +185,7 @@ public class Robot extends TimedRobot {
         turret.raise();
         SmartDashboard.putString("Turret", "Raised");
       }
-      if(button10.state) {
+      else if(button10.state) {
         turret.lower();
         SmartDashboard.putString("Turret", "Lowered");
       }
@@ -198,4 +198,8 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
   }
+
+  public void rotateByJoystick(double input) {
+    ;
+}
 }
