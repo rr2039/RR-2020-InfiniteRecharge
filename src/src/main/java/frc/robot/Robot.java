@@ -213,7 +213,7 @@ public class Robot extends TimedRobot {
     }
     else if (!sensorOuttakeBool) {
       state = hopperState.Hot;
-    } /*
+    }
     else {
       state = hopperState.Armed;
       if (operatorStick.getRawButtonPressed(1)) {
@@ -221,7 +221,7 @@ public class Robot extends TimedRobot {
         shoot = true;
         timer.start();
       }
-    } */
+    }
 
   }
     switch (state) {
