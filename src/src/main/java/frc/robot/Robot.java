@@ -179,16 +179,13 @@ public class Robot extends TimedRobot {
       aimSubsystem.autoAimOff();
       SmartDashboard.putBoolean("AutoAimON", false);
       turret.rotateByJoystick(operatorJoy.getRawAxis(0));
+      if (button11.state) {
+        turret.raise();
+      }
+      if(button10.state) {
+        turret.lower();
+      }
     }
-    if (button11.state) {
-      turret.raise();
-    }
-    if(button10.state) {
-      turret.lower();
-    }
-    else if (!button11.state);
-    
-     
   }
   
   /**
