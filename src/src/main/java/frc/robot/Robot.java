@@ -17,10 +17,14 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.Timer;
+
 import frc.robot.intakeSubsystem;
 import frc.robot.hopperSubsystem;
 import frc.robot.aimSubsystem;
 import frc.robot.Button;
+import frc.robot.hopperState;
 
 
 /**
@@ -41,7 +45,6 @@ public class Robot extends TimedRobot {
 
   private CANSparkMax rightFrontMotor;
   private CANSparkMax rightBackMotor;
-  //private final DifferentialDrive driveTrain = new DifferentialDrive(leftMotor, rightMotor);
   private final Joystick driveStick = new Joystick(0);
   private final Joystick operatorJoy = new Joystick(1);
   DifferentialDrive driveTrain;
@@ -50,9 +53,20 @@ public class Robot extends TimedRobot {
   private final Button button2 = new Button();
   Turret turret = new Turret(1);
   boolean someBoolean = false;
+  private hopperState state = hopperState.INIT;
+  private AnalogInput sensorIntake = new AnalogInput(0);
+  private AnalogInput sensorOuttake = new AnalogInput(1);
+  private boolean sensorIntakeBool = false;
+  private boolean sensorIntakeShadow = sensorIntakeBool;
+  private boolean sensorOuttakeBool = false;
+  private boolean sensorOuttakeShadow = sensorOuttakeBool;
+  private int ballCount = 0;
+  private Timer timer = new Timer();
+  private boolean shoot = false;
+
   /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
+   * This function is run when the robot is first started up and should be used
+   * for any initialization code.
    */
   @Override
   public void robotInit() {
@@ -73,12 +87,13 @@ public class Robot extends TimedRobot {
   }
 
   /**
-   * This function is called every robot packet, no matter the mode. Use
-   * this for items like diagnostics that you want ran during disabled,
-   * autonomous, teleoperated and test.
+   * This function is called every robot packet, no matter the mode. Use this for
+   * items like diagnostics that you want ran during disabled, autonomous,
+   * teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before
-   * LiveWindow and SmartDashboard integrated updating.
+   * <p>
+   * This runs after the mode specific periodic functions, but before LiveWindow
+   * and SmartDashboard integrated updating.
    */
   @Override
   public void robotPeriodic() {
@@ -86,14 +101,15 @@ public class Robot extends TimedRobot {
 
   /**
    * This autonomous (along with the chooser code above) shows how to select
-   * between different autonomous modes using the dashboard. The sendable
-   * chooser code works with the Java SmartDashboard. If you prefer the
-   * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-   * getString line to get the auto name from the text box below the Gyro
+   * between different autonomous modes using the dashboard. The sendable chooser
+   * code works with the Java SmartDashboard. If you prefer the LabVIEW Dashboard,
+   * remove all of the chooser code and uncomment the getString line to get the
+   * auto name from the text box below the Gyro
    *
-   * <p>You can add additional auto modes by adding additional comparisons to
-   * the switch structure below with additional strings. If using the
-   * SendableChooser make sure to add them to the chooser code above as well.
+   * <p>
+   * You can add additional auto modes by adding additional comparisons to the
+   * switch structure below with additional strings. If using the SendableChooser
+   * make sure to add them to the chooser code above as well.
    */
   @Override
   public void autonomousInit() {
@@ -108,13 +124,13 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
+    case kCustomAuto:
+      // Put custom auto code here
+      break;
+    case kDefaultAuto:
+    default:
+      // Put default auto code here
+      break;
     }
   }
 
@@ -123,6 +139,19 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    if (sensorIntake.getAverageVoltage() > 0.8) {
+      sensorIntakeBool = true;
+    }
+    else {
+      sensorIntakeBool = false;
+    }
+    if (sensorOuttake.getAverageVoltage() > 0.8) {
+      sensorOuttakeBool = true;
+    }
+    else {
+      sensorOuttakeBool = false;
+    }
+    
     driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
 
     //Replace these Button Stubs with real code if needed
@@ -172,7 +201,78 @@ public class Robot extends TimedRobot {
         SmartDashboard.putString("Turret", "Lowered");
       }
     }
+
+    /* State Machine Logic Hopper System */
+    if (sensorIntakeShadow != sensorIntakeBool) {
+      if (sensorIntakeBool) {
+        ballCount++;
+      }
+      sensorIntakeShadow = sensorIntakeBool;
+    }
+    if (sensorOuttakeShadow != sensorOuttakeBool) {
+      if (sensorOuttakeBool) {
+      }
+      if (!sensorOuttakeBool) {
+        ballCount--;
+      }
+      sensorOuttakeShadow = sensorOuttakeBool;
+    }
+
+    if (!shoot) {
+      if (ballCount == 0) {
+        state = hopperState.INIT;
+      }
+      else if (!sensorOuttakeBool) {
+        state = hopperState.HOT;
+      }
+      else { 
+        state = hopperState.ARMED;
+        if (driveStick.getRawButtonPressed(Button.START)) { 
+          state = hopperState.SHOOT;
+          shoot = true;
+          timer.start(); 
+      } 
+    }
+         
+
+    }
+
+    if (state == hopperState.INIT) {
+      SmartDashboard.putString("State", "Init");
+      hopperSubsystem.hopperOff();
+      intakeSubsystem.intakeOn();
+    }
+    else if (state == hopperState.HOT) {
+      SmartDashboard.putString("State", "Hot");
+      hopperSubsystem.hopperOn();
+      intakeSubsystem.intakeOn();
+    }
+    else if (state == hopperState.ARMED) {
+      SmartDashboard.putString("State", "Armed");
+      if (ballCount < 4) {
+        hopperSubsystem.hopperOn();
+        intakeSubsystem.intakeOn();
+      } 
+      else {
+        hopperSubsystem.hopperOff();
+        intakeSubsystem.intakeOff();
+      }
+    }
+    else if (state == hopperState.SHOOT) {
+      SmartDashboard.putString("State", "Shoot");
+      hopperSubsystem.hopperOff();
+      intakeSubsystem.intakeOff();
+      if (timer.get() >= 0.5) {
+        shoot = false;
+        timer.stop();
+        timer.reset();
+        state = hopperState.INIT;
+      }
+        // shoot motor run
+    }
+    SmartDashboard.putNumber("Ball Count", ballCount);
   }
+
   
   /**
    * This function is called periodically during test mode.
