@@ -18,6 +18,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.Timer;
 
 import frc.robot.intakeSubsystem;
 import frc.robot.hopperSubsystem;
@@ -45,6 +46,7 @@ public class Robot extends TimedRobot {
   private CANSparkMax rightFrontMotor;
   private CANSparkMax rightBackMotor;
   private final Joystick driveStick = new Joystick(0);
+  private final Joystick operatorStick = new Joystick(1);
   DifferentialDrive driveTrain;
   private final Button buttonA = new Button();
   private final Button buttonB = new Button();
@@ -57,6 +59,8 @@ public class Robot extends TimedRobot {
   private boolean sensorOuttakeBool = false;
   private boolean sensorOuttakeShadow = sensorOuttakeBool;
   private int ballCount = 0;
+  private Timer timer = new Timer();
+  private boolean shoot = false;
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -67,7 +71,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    leftFrontMotor = new CANSparkMax(1, MotorType.kBrushed);
+    leftFrontMotor = new CANSparkMax(1, MotorType.kBrushless);
     leftBackMotor = new CANSparkMax(2, MotorType.kBrushless);
 
     rightFrontMotor = new CANSparkMax(3, MotorType.kBrushless);
@@ -130,13 +134,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    if (sensorIntake.getAverageValue() > 0.5) {
+    if (driveStick.getRawButtonPressed(Button.LEFT_BUMPER)) {
       sensorIntakeBool = true;
     }
     else {
       sensorIntakeBool = false;
     }
-    if (sensorOuttake.getAverageVoltage() > 0.5) {
+    if (driveStick.getRawButtonPressed(Button.RIGHT_BUMPER)) {
       sensorOuttakeBool = true;
     }
     else {
@@ -160,7 +164,7 @@ public class Robot extends TimedRobot {
       intakeSubsystem.intakeOn();
       SmartDashboard.putBoolean("IntakeON", true);
     }
-    if (driveStick.getRawButton(Button.RIGHT_BUMPER)) {
+    if (driveStick.getRawButton(Button.BACK)) {
       intakeSubsystem.intakeExtend();
       SmartDashboard.putBoolean("IntakeEXTEND", true);
       SmartDashboard.putBoolean("IntakeRETRACT", false);
@@ -191,35 +195,67 @@ public class Robot extends TimedRobot {
     if (sensorIntakeShadow != sensorIntakeBool) {
       if (sensorIntakeBool){
         ballCount++;
-        state = state.nextState();
       }
       sensorIntakeShadow = sensorIntakeBool;
     }
     if (sensorOuttakeShadow != sensorOuttakeBool) {
       if (sensorOuttakeBool) {
-        state = state.nextState();
       }
       if (!sensorOuttakeBool) {
         ballCount--;
-        state = state.nextState();
       }
       sensorOuttakeShadow = sensorOuttakeBool;
     }
-    if (ballCount > 0 && state == hopperState.Init) {
-      state = state.nextState();
+
+  if (!shoot) {
+    if (ballCount == 0) {
+      state = hopperState.Init;
     }
+    else if (!sensorOuttakeBool) {
+      state = hopperState.Hot;
+    } /*
+    else {
+      state = hopperState.Armed;
+      if (operatorStick.getRawButtonPressed(1)) {
+        state = hopperState.Shoot;
+        shoot = true;
+        timer.start();
+      }
+    } */
+
+  }
     switch (state) {
       case Init:
+        SmartDashboard.putString("State", "Init");
         hopperSubsystem.hopperOff();
+        intakeSubsystem.intakeOn();
       case Hot:
+        SmartDashboard.putString("State", "Hot");
         hopperSubsystem.hopperOn();
+        intakeSubsystem.intakeOn();
       case Armed:
-        hopperSubsystem.hopperOff();
-        if (driveStick.getRawButton(Button.Y)) {
-          state = state.nextState();
+        SmartDashboard.putString("State", "Armed");
+        if (ballCount < 4) {
+          hopperSubsystem.hopperOn();
+          intakeSubsystem.intakeOn();
         }
+        else {
+          hopperSubsystem.hopperOff();
+          intakeSubsystem.intakeOff();
+        }
+
       case Shoot:
+        SmartDashboard.putString("State", "Shoot");
+        hopperSubsystem.hopperOff();
+        intakeSubsystem.intakeOff();
+        if (timer.get() >= 0.5) {
+          shoot = false;
+          timer.stop();
+          timer.reset();
+        }
+        // shoot motor run
     }
+    SmartDashboard.putNumber("Ball Count", ballCount);
   }
 
   
