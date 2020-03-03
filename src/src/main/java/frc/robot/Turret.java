@@ -72,6 +72,14 @@ public class Turret {
         return (rotationMotor.getSelectedSensorPosition()/4096)*360;
     }
 
+    public double getLeftShooterSpeed() {
+        return leftShooter.getSelectedSensorVelocity();
+    }
+    
+    public double getRightShooterSpeed() {
+        return rightShooter.getSelectedSensorVelocity();
+    }
+
     public void resetRotation() {
         rotationMotor.set(ControlMode.Position, degreesToQuadrature(0));
     }
