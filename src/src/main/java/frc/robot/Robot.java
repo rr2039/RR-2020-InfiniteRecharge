@@ -152,7 +152,7 @@ public class Robot extends TimedRobot {
       sensorOuttakeBool = false;
     }
     
-    driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(0));
+    driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(4));
 
     //Replace these Button Stubs with real code if needed
     if (operatorJoy.getRawButtonPressed(3)) {
