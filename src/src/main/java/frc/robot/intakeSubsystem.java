@@ -1,10 +1,12 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class intakeSubsystem {
-    private static WPI_TalonSRX motorIntake = new WPI_TalonSRX(0);
-    private static WPI_TalonSRX motorExtend = new WPI_TalonSRX(0);
+    private static WPI_TalonSRX motorIntake = new WPI_TalonSRX(3);
+    private static Solenoid leftIntakeSolenoid = new Solenoid(0);
+    private static Solenoid rightIntakeSolenoid = new Solenoid(1);
 
     public static void intakeOn() {
         motorIntake.set(0.1);
@@ -17,12 +19,14 @@ public class intakeSubsystem {
 
     public static void intakeExtend() {
     /* separate system */
-        motorExtend.set(0.1);
+        leftIntakeSolenoid.set(true);
+        rightIntakeSolenoid.set(true);
 
     }
 
     public static void intakeRetract() {
     /* separate system */
-        motorExtend.set(-0.1);
+        leftIntakeSolenoid.set(false);
+        rightIntakeSolenoid.set(false);
     }
 }

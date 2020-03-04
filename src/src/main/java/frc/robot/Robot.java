@@ -273,7 +273,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Ball Count", ballCount);
     SmartDashboard.putNumber("Left Shooter Speed", turret.getLeftShooterSpeed());
     SmartDashboard.putNumber("Right Shooter Speed", turret.getRightShooterSpeed());
-    turret.shooterSpeed(operatorJoy.getRawAxis(2));
+   // turret.shooterSpeed(operatorJoy.getRawAxis(2)*50000);
+    SmartDashboard.putNumber("Speed Dial", operatorJoy.getRawAxis(2)*50000);
   }
 
   

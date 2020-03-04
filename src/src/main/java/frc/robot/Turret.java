@@ -10,27 +10,26 @@ public class Turret {
     private static final double gearRatio = 1;
 
     private static WPI_TalonSRX rotationMotor = new WPI_TalonSRX(24);
-    private static WPI_TalonSRX elevationMotor = new WPI_TalonSRX(0);
-    private static WPI_TalonSRX leftShooter = new WPI_TalonSRX(0);
-    private static WPI_TalonSRX rightShooter = new WPI_TalonSRX(0);
+    private static WPI_TalonSRX leftShooter = new WPI_TalonSRX(7);
+    private static WPI_TalonSRX rightShooter = new WPI_TalonSRX(5);
 
     private static final int kTimeoutMs = 30;
     private static final double kF = 0.0362;
     private static final double kP = 0.05;
-    private static final double kI = 0.00001;
+    private static final double kI = 0;
     private static final double kD = 0;
 
-    Solenoid pitchSolenoid = new Solenoid(1);
+    Solenoid leftPitchSolenoid = new Solenoid(2);
+    Solenoid rightPitchSolenoid = new Solenoid(3);
 
     public Turret(double rotationMultiplier) {
         this.rotationMultiplier = rotationMultiplier;
         rotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-        elevationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
 
         leftShooter.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, kTimeoutMs);
         rightShooter.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, kTimeoutMs);
         
-        leftShooter.setSensorPhase(true);
+        leftShooter.setSensorPhase(false);
         leftShooter.configNominalOutputForward(0, kTimeoutMs);
         leftShooter.configNominalOutputReverse(0, kTimeoutMs);
         leftShooter.configPeakOutputForward(1, kTimeoutMs);
@@ -40,7 +39,7 @@ public class Turret {
         leftShooter.config_kI(0, kI);
         leftShooter.config_kD(0, kD);
 
-        leftShooter.setSensorPhase(true);
+        leftShooter.setSensorPhase(false);
         rightShooter.configNominalOutputForward(0, kTimeoutMs);
         rightShooter.configNominalOutputReverse(0, kTimeoutMs);
         rightShooter.configPeakOutputForward(1, kTimeoutMs);
@@ -53,11 +52,13 @@ public class Turret {
     }
 
     public void raise() {
-        pitchSolenoid.set(true);
+        leftPitchSolenoid.set(true);
+        rightPitchSolenoid.set(true);
     }
 
     public void lower() {
-        pitchSolenoid.set(false);
+        leftPitchSolenoid.set(false);
+        rightPitchSolenoid.set(false);
     }
 
     public void rotateByJoystick(double input) {
@@ -75,7 +76,7 @@ public class Turret {
     public double getLeftShooterSpeed() {
         return leftShooter.getSelectedSensorVelocity();
     }
-    
+
     public double getRightShooterSpeed() {
         return rightShooter.getSelectedSensorVelocity();
     }
