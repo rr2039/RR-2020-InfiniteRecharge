@@ -1,6 +1,6 @@
 package frc.robot;
 
-public class HardwareIDs {
+public class ID {
     public final static int INTAKE = 1;
     public final static int FIRST_FEEDER = 2;
     public final static int SECOND_FEEDER = 3;
