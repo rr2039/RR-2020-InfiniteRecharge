@@ -51,6 +51,7 @@ public class Robot extends TimedRobot {
   private final Button button3 = new Button();
   private final Button button6 = new Button();
   private final Button button2 = new Button();
+  private final Button button11 = new Button();
   Turret turret = new Turret(1);
   boolean someBoolean = false;
   private hopperState state = hopperState.INIT;
@@ -203,7 +204,7 @@ public class Robot extends TimedRobot {
     }
 
     /* State Machine Logic Hopper System */
-    if (sensorIntakeShadow != sensorIntakeBool) {
+    /*if (sensorIntakeShadow != sensorIntakeBool) {
       if (sensorIntakeBool) {
         ballCount++;
       }
@@ -269,7 +270,7 @@ public class Robot extends TimedRobot {
         state = hopperState.INIT;
       }
         // shoot motor run
-    }
+    }*/
     SmartDashboard.putNumber("Ball Count", ballCount);
     SmartDashboard.putNumber("Left Shooter Speed", turret.getLeftShooterSpeed());
     SmartDashboard.putNumber("Right Shooter Speed", turret.getRightShooterSpeed());

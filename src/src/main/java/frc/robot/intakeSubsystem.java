@@ -4,13 +4,12 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class intakeSubsystem {
-    private static WPI_TalonSRX motorIntake = new WPI_TalonSRX(3);
+    private static WPI_TalonSRX motorIntake = new WPI_TalonSRX(1);
     private static Solenoid leftIntakeSolenoid = new Solenoid(0);
     private static Solenoid rightIntakeSolenoid = new Solenoid(1);
 
     public static void intakeOn() {
-        motorIntake.set(0.1);
-
+        motorIntake.set(-1);
     }
 
     public static void intakeOff() {
