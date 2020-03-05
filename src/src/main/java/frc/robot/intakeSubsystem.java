@@ -2,9 +2,10 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.Solenoid;
+import frc.robot.ID;
 
 public class intakeSubsystem {
-    private static WPI_TalonSRX motorIntake = new WPI_TalonSRX(1);
+    private static WPI_TalonSRX motorIntake = new WPI_TalonSRX(ID.INTAKE);
     private static Solenoid leftIntakeSolenoid = new Solenoid(0);
     private static Solenoid rightIntakeSolenoid = new Solenoid(1);
 

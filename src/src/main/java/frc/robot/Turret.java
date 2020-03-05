@@ -4,14 +4,15 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.Solenoid;
+import frc.robot.ID;
 
 public class Turret {
     private double rotationMultiplier;
     private static final double gearRatio = 1;
 
-    private static WPI_TalonSRX rotationMotor = new WPI_TalonSRX(24);
-    private static WPI_TalonSRX leftShooter = new WPI_TalonSRX(7);
-    private static WPI_TalonSRX rightShooter = new WPI_TalonSRX(5);
+    private static WPI_TalonSRX rotationMotor = new WPI_TalonSRX(ID.TURRET);
+    private static WPI_TalonSRX leftShooter = new WPI_TalonSRX(ID.LEFT_SHOOTER);
+    private static WPI_TalonSRX rightShooter = new WPI_TalonSRX(ID.RIGHT_SHOOTER);
 
     private static final int kTimeoutMs = 30;
     private static final double kF = 0.0362;
