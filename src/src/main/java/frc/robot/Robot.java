@@ -17,6 +17,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -51,8 +53,10 @@ public class Robot extends TimedRobot {
   private final Button button3 = new Button();
   private final Button button6 = new Button();
   private final Button button2 = new Button();
-  private final Button button11 = new Button();
-  Turret turret = new Turret(1);
+  private final Button button10 = new Button();
+  private final Button buttonA = new Button();
+  private final Button buttonStart = new Button();
+  Turret turret = new Turret(0.25);
   boolean someBoolean = false;
   private hopperState state = hopperState.INIT;
   private AnalogInput sensorIntake = new AnalogInput(0);
@@ -63,11 +67,14 @@ public class Robot extends TimedRobot {
   private boolean sensorOuttakeShadow = sensorOuttakeBool;
   private int ballCount = 0;
   private Timer timer = new Timer();
+  private Timer autoTimer = new Timer();
   private boolean shoot = false;
+  private double shooterSpeed = 0.5;
 
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
+   * 
    */
   @Override
   public void robotInit() {
@@ -85,6 +92,12 @@ public class Robot extends TimedRobot {
     SpeedControllerGroup rightDriveTrainGroup = new SpeedControllerGroup(rightFrontMotor, rightBackMotor);
 
     driveTrain = new DifferentialDrive(leftDriveTrainGroup, rightDriveTrainGroup);
+    UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture(0);
+    UsbCamera cameraIntake = CameraServer.getInstance().startAutomaticCapture(1);
+    camera1.setResolution(360, 240);
+    camera1.setFPS(15);
+    cameraIntake.setResolution(360, 240);
+    cameraIntake.setFPS(15);
   }
 
   /**
@@ -117,6 +130,7 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    autoTimer.start();
   }
 
   /**
@@ -130,7 +144,14 @@ public class Robot extends TimedRobot {
       break;
     case kDefaultAuto:
     default:
-      // Put default auto code here
+      if (autoTimer.get() < 2.0){
+        driveTrain.arcadeDrive(0.5, 0);
+      }
+      else {
+        driveTrain.arcadeDrive(0, 0);
+        autoTimer.stop();
+        break;
+      }
       break;
     }
   }
@@ -140,6 +161,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    if (driveStick.getRawButtonPressed(Button.A)) {
+      buttonA.state = !buttonA.state;
+    }
+    if (buttonA.state){
+      driveTrain.arcadeDrive(driveStick.getRawAxis(1) * -1, driveStick.getRawAxis(4));
+    }
+    else if (!buttonA.state) {
+      driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(4));
+    }
     if (sensorIntake.getAverageVoltage() > 0.8) {
       sensorIntakeBool = true;
     }
@@ -152,9 +182,6 @@ public class Robot extends TimedRobot {
     else {
       sensorOuttakeBool = false;
     }
-    
-    driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(4));
-
     //Replace these Button Stubs with real code if needed
     if (operatorJoy.getRawButtonPressed(3)) {
       button3.state = !button3.state;
@@ -165,13 +192,16 @@ public class Robot extends TimedRobot {
     if (operatorJoy.getRawButtonPressed(2)) {
       button2.state = !button2.state;
     }
-    if (button3.state){
+    if (operatorJoy.getRawButtonPressed(10)) {
+      button10.state = !button10.state;
+    }
+    if (!button3.state){
       intakeSubsystem.intakeOff();
       intakeSubsystem.intakeRetract();
       SmartDashboard.putBoolean("IntakeON", false);
       SmartDashboard.putBoolean("IntakeExtended", false);
     }
-    else if (!button3.state){
+    else if (button3.state){
       intakeSubsystem.intakeOn();
       intakeSubsystem.intakeExtend();
       SmartDashboard.putBoolean("IntakeON", true);
@@ -192,19 +222,34 @@ public class Robot extends TimedRobot {
     else if (!button6.state) {
       aimSubsystem.autoAimOff();
       SmartDashboard.putBoolean("AutoAimON", false);
-      turret.rotateByJoystick(operatorJoy.getRawAxis(0));
-      if (operatorJoy.getRawButtonPressed(11)) {
+      if (Math.abs(operatorJoy.getRawAxis(0)) > 0.5) {
+        turret.rotateByJoystick(operatorJoy.getRawAxis(0));
+      } 
+      else {
+        turret.rotateByJoystick(0);
+      }
+      if (button10.state) {
         turret.raise();
         SmartDashboard.putString("Turret", "Raised");
       }
-      else if(operatorJoy.getRawButtonPressed(10)) {
+      else if(!button10.state) {
         turret.lower();
         SmartDashboard.putString("Turret", "Lowered");
       }
     }
-
+    if (operatorJoy.getRawButtonPressed(9)) {
+      shooterSpeed += 0.1;
+    }
+    else if (operatorJoy.getRawButtonPressed(8)) {
+      shooterSpeed -= 0.1;
+    }
+    if (operatorJoy.getRawButtonPressed(1)) { 
+      state = hopperState.SHOOT;
+      shoot = true;
+      timer.start(); 
+    } 
     /* State Machine Logic Hopper System */
-    /*if (sensorIntakeShadow != sensorIntakeBool) {
+    if (sensorIntakeShadow != sensorIntakeBool) {
       if (sensorIntakeBool) {
         ballCount++;
       }
@@ -228,54 +273,59 @@ public class Robot extends TimedRobot {
       }
       else { 
         state = hopperState.ARMED;
-        if (driveStick.getRawButtonPressed(Button.START)) { 
+        if (operatorJoy.getRawButtonPressed(1)) { 
           state = hopperState.SHOOT;
           shoot = true;
           timer.start(); 
-      } 
+        } 
+      }
     }
-         
-
-    }
-
     if (state == hopperState.INIT) {
       SmartDashboard.putString("State", "Init");
       hopperSubsystem.hopperOff();
-      intakeSubsystem.intakeOn();
     }
     else if (state == hopperState.HOT) {
       SmartDashboard.putString("State", "Hot");
       hopperSubsystem.hopperOn();
-      intakeSubsystem.intakeOn();
+      hopperSubsystem.feederBottomOn();
     }
     else if (state == hopperState.ARMED) {
       SmartDashboard.putString("State", "Armed");
-      if (ballCount < 4) {
+      if (ballCount < 2) {
         hopperSubsystem.hopperOn();
-        intakeSubsystem.intakeOn();
+        hopperSubsystem.feederBottomOff();
       } 
       else {
         hopperSubsystem.hopperOff();
         intakeSubsystem.intakeOff();
+        hopperSubsystem.feederBottomOff();
       }
     }
     else if (state == hopperState.SHOOT) {
       SmartDashboard.putString("State", "Shoot");
       hopperSubsystem.hopperOff();
       intakeSubsystem.intakeOff();
-      if (timer.get() >= 0.5) {
+      hopperSubsystem.feederBottomOff();
+      turret.shooterSpeed(shooterSpeed);
+      if (timer.get() >= 1.0) {
+        hopperSubsystem.feederBottomOn();
+        hopperSubsystem.feederTopOn();
+      }
+      if (timer.get() >= 2.0) {
+        turret.shooterSpeed(0);
+        hopperSubsystem.feederBottomOff();
+        hopperSubsystem.feederTopOff();
         shoot = false;
         timer.stop();
         timer.reset();
-        state = hopperState.INIT;
       }
-        // shoot motor run
-    }*/
+    }
     SmartDashboard.putNumber("Ball Count", ballCount);
     SmartDashboard.putNumber("Left Shooter Speed", turret.getLeftShooterSpeed());
     SmartDashboard.putNumber("Right Shooter Speed", turret.getRightShooterSpeed());
-   // turret.shooterSpeed(operatorJoy.getRawAxis(2)*50000);
     SmartDashboard.putNumber("Speed Dial", operatorJoy.getRawAxis(2)*50000);
+    SmartDashboard.putNumber("Shooter Speed", shooterSpeed);
+    SmartDashboard.putBoolean("Reverse", buttonA.state);
   }
 
   
@@ -286,7 +336,5 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
   }
 
-  public void rotateByJoystick(double input) {
-    ;
 }
-}
+

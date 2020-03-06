@@ -20,8 +20,8 @@ public class Turret {
     private static final double kI = 0;
     private static final double kD = 0;
 
-    Solenoid leftPitchSolenoid = new Solenoid(2);
-    Solenoid rightPitchSolenoid = new Solenoid(3);
+    Solenoid raiseSolenoid = new Solenoid(2);
+    Solenoid lowerSolenoid = new Solenoid(3);
 
     public Turret(double rotationMultiplier) {
         this.rotationMultiplier = rotationMultiplier;
@@ -53,13 +53,13 @@ public class Turret {
     }
 
     public void raise() {
-        leftPitchSolenoid.set(true);
-        rightPitchSolenoid.set(true);
+        lowerSolenoid.set(false);
+        raiseSolenoid.set(true);
     }
 
     public void lower() {
-        leftPitchSolenoid.set(false);
-        rightPitchSolenoid.set(false);
+        raiseSolenoid.set(false);
+        lowerSolenoid.set(false);
     }
 
     public void rotateByJoystick(double input) {
@@ -91,7 +91,7 @@ public class Turret {
     }
 
     public void shooterSpeed(double speed) {
-        leftShooter.set(ControlMode.Velocity, speed);
-        rightShooter.set(ControlMode.Velocity, -speed);
+        leftShooter.set(speed);
+        rightShooter.set(speed);
     }
 }

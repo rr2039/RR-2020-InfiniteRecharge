@@ -6,11 +6,11 @@ import frc.robot.ID;
 
 public class intakeSubsystem {
     private static WPI_TalonSRX motorIntake = new WPI_TalonSRX(ID.INTAKE);
-    private static Solenoid leftIntakeSolenoid = new Solenoid(ID.LEFT_INTAKE_SOLENOID);
-    private static Solenoid rightIntakeSolenoid = new Solenoid(ID.RIGHT_INTAKE_SOLENOID);
+    private static Solenoid extendIntakeSolenoid = new Solenoid(0);
+    private static Solenoid retractIntakeSolenoid = new Solenoid(1);
 
     public static void intakeOn() {
-        motorIntake.set(-1);
+        motorIntake.set(-0.50);
     }
 
     public static void intakeOff() {
@@ -19,14 +19,14 @@ public class intakeSubsystem {
 
     public static void intakeExtend() {
     /* separate system */
-        leftIntakeSolenoid.set(true);
-        rightIntakeSolenoid.set(true);
+        retractIntakeSolenoid.set(false);
+        extendIntakeSolenoid.set(true);
 
     }
 
     public static void intakeRetract() {
     /* separate system */
-        leftIntakeSolenoid.set(false);
-        rightIntakeSolenoid.set(false);
+        extendIntakeSolenoid.set(false);
+        retractIntakeSolenoid.set(true);
     }
 }
