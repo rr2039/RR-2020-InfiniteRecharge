@@ -282,7 +282,7 @@ public class Robot extends TimedRobot {
     }
     if (state == hopperState.INIT) {
       SmartDashboard.putString("State", "Init");
-      hopperSubsystem.hopperOff();
+      hopperSubsystem.hopperOn();
     }
     else if (state == hopperState.HOT) {
       SmartDashboard.putString("State", "Hot");
