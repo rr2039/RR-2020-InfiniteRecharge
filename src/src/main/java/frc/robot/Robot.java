@@ -65,7 +65,7 @@ public class Robot extends TimedRobot {
   private boolean sensorIntakeShadow = sensorIntakeBool;
   private boolean sensorOuttakeBool = false;
   private boolean sensorOuttakeShadow = sensorOuttakeBool;
-  private int ballCount = 0;
+  private int ballCount = 3;
   private Timer timer = new Timer();
   private Timer autoTimer = new Timer();
   private boolean shoot = false;
