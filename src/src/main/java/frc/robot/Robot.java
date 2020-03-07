@@ -138,7 +138,7 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
     case kCustomAuto:
-     if (autoTimer.get() < 0.8){
+     if (autoTimer.get() < 0.7){
         driveTrain.arcadeDrive(-0.5, 0);
       }
       else {
