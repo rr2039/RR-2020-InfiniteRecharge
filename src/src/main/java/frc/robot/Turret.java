@@ -59,7 +59,7 @@ public class Turret {
 
     public void lower() {
         raiseSolenoid.set(false);
-        lowerSolenoid.set(false);
+        lowerSolenoid.set(true);
     }
 
     public void rotateByJoystick(double input) {

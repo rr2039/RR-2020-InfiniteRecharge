@@ -70,6 +70,7 @@ public class Robot extends TimedRobot {
   private Timer autoTimer = new Timer();
   private boolean shoot = false;
   private double shooterSpeed = 0.5;
+  private double shootTime = 0.0;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -93,11 +94,8 @@ public class Robot extends TimedRobot {
 
     driveTrain = new DifferentialDrive(leftDriveTrainGroup, rightDriveTrainGroup);
     UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture(0);
-    UsbCamera cameraIntake = CameraServer.getInstance().startAutomaticCapture(1);
     camera1.setResolution(360, 240);
     camera1.setFPS(15);
-    cameraIntake.setResolution(360, 240);
-    cameraIntake.setFPS(15);
   }
 
   /**
@@ -140,11 +138,100 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
     case kCustomAuto:
-      // Put custom auto code here
+     if (autoTimer.get() < 0.8){
+        driveTrain.arcadeDrive(-0.5, 0);
+      }
+      else {
+        driveTrain.arcadeDrive(0, 0);
+        autoTimer.stop();
+        if (sensorIntake.getAverageVoltage() > 0.8) {
+          sensorIntakeBool = true;
+        }
+        else {
+          sensorIntakeBool = false;
+        }
+        if (sensorOuttake.getAverageVoltage() > 0.8) {
+          sensorOuttakeBool = true;
+        }
+        else {
+          sensorOuttakeBool = false;
+        }
+        if (sensorIntakeShadow != sensorIntakeBool) {
+          if (sensorIntakeBool) {
+            ballCount++;
+          }
+          sensorIntakeShadow = sensorIntakeBool;
+        }
+        if (sensorOuttakeShadow != sensorOuttakeBool) {
+          if (sensorOuttakeBool) {
+          }
+          if (!sensorOuttakeBool) {
+            ballCount--;
+          }
+          sensorOuttakeShadow = sensorOuttakeBool;
+        }
+        if (!shoot) {
+          if (ballCount == 0) {
+            state = hopperState.INIT;
+          }
+          else if (!sensorOuttakeBool) {
+            state = hopperState.HOT;
+          }
+          else { 
+            state = hopperState.ARMED;
+            state = hopperState.SHOOT;
+            shoot = true;
+            timer.start();  
+          }
+        }
+        if (state == hopperState.INIT) {
+          SmartDashboard.putString("State", "Init");
+          hopperSubsystem.hopperOn();
+          ballCount = 0;
+          break;
+        }
+        else if (state == hopperState.HOT) {
+          SmartDashboard.putString("State", "Hot");
+          hopperSubsystem.hopperOn();
+          hopperSubsystem.feederBottomOn();
+        }
+        else if (state == hopperState.ARMED) {
+          SmartDashboard.putString("State", "Armed");
+          if (ballCount < 2) {
+            hopperSubsystem.hopperOn();
+            hopperSubsystem.feederBottomOff();
+          } 
+          else {
+            hopperSubsystem.hopperOff();
+            intakeSubsystem.intakeOff();
+            hopperSubsystem.feederBottomOff();
+          }
+        }
+        else if (state == hopperState.SHOOT) {
+          SmartDashboard.putString("State", "Shoot");
+          hopperSubsystem.hopperOff();
+          intakeSubsystem.intakeOff();
+          hopperSubsystem.feederBottomOff();
+          turret.shooterSpeed(0.5);
+          if (timer.get() >= 1.0) {
+            hopperSubsystem.feederBottomOn();
+            hopperSubsystem.feederTopOn();
+          }
+          if (timer.get() >= 2.0) {
+            turret.shooterSpeed(0);
+            hopperSubsystem.feederBottomOff();
+            hopperSubsystem.feederTopOff();
+            shoot = false;
+            shootTime = autoTimer.get();
+            timer.stop();
+            timer.reset();
+          }
+        }
+      }
       break;
     case kDefaultAuto:
     default:
-      if (autoTimer.get() < 2.0){
+      if (autoTimer.get() < 7.0 && autoTimer.get() > 5.0){
         driveTrain.arcadeDrive(0.5, 0);
       }
       else {
@@ -291,7 +378,7 @@ public class Robot extends TimedRobot {
     }
     else if (state == hopperState.ARMED) {
       SmartDashboard.putString("State", "Armed");
-      if (ballCount < 2) {
+      if (ballCount < 3) {
         hopperSubsystem.hopperOn();
         hopperSubsystem.feederBottomOff();
       } 
