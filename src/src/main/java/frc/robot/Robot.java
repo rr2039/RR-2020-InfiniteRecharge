@@ -55,7 +55,6 @@ public class Robot extends TimedRobot {
   private final Button button2 = new Button();
   private final Button button10 = new Button();
   private final Button buttonA = new Button();
-  private final Button buttonStart = new Button();
   Turret turret = new Turret(0.25);
   boolean someBoolean = false;
   private hopperState state = hopperState.INIT;
@@ -70,7 +69,6 @@ public class Robot extends TimedRobot {
   private Timer autoTimer = new Timer();
   private boolean shoot = false;
   private double shooterSpeed = 0.5;
-  private double shootTime = 0.0;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -171,7 +169,7 @@ public class Robot extends TimedRobot {
           sensorOuttakeShadow = sensorOuttakeBool;
         }
         if (!shoot) {
-          if (ballCount == 0) {
+          if (ballCount <= 0) {
             state = hopperState.INIT;
           }
           else if (!sensorOuttakeBool) {
@@ -222,7 +220,6 @@ public class Robot extends TimedRobot {
             hopperSubsystem.feederBottomOff();
             hopperSubsystem.feederTopOff();
             shoot = false;
-            shootTime = autoTimer.get();
             timer.stop();
             timer.reset();
           }
@@ -352,7 +349,8 @@ public class Robot extends TimedRobot {
     }
 
     if (!shoot) {
-      if (ballCount == 0) {
+      if (ballCount <= 0) {
+        ballCount = 0;
         state = hopperState.INIT;
       }
       else if (!sensorOuttakeBool) {
@@ -378,13 +376,12 @@ public class Robot extends TimedRobot {
     }
     else if (state == hopperState.ARMED) {
       SmartDashboard.putString("State", "Armed");
-      if (ballCount < 3) {
+      if (ballCount < 2) {
         hopperSubsystem.hopperOn();
         hopperSubsystem.feederBottomOff();
       } 
       else {
         hopperSubsystem.hopperOff();
-        intakeSubsystem.intakeOff();
         hopperSubsystem.feederBottomOff();
       }
     }
