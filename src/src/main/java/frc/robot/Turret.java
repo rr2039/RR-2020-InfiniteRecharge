@@ -4,6 +4,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import frc.robot.ID;
 
 public class Turret {
@@ -55,11 +57,13 @@ public class Turret {
     public void raise() {
         lowerSolenoid.set(false);
         raiseSolenoid.set(true);
+        SmartDashboard.putString("Turret", "Raised");
     }
 
     public void lower() {
-        raiseSolenoid.set(false);
         lowerSolenoid.set(true);
+        raiseSolenoid.set(false);
+        SmartDashboard.putString("Turret", "Lowered");
     }
 
     public void rotateByJoystick(double input) {
@@ -93,5 +97,6 @@ public class Turret {
     public void shooterSpeed(double speed) {
         leftShooter.set(speed);
         rightShooter.set(speed);
+        SmartDashboard.putNumber("Shooter Speed", speed);
     }
 }

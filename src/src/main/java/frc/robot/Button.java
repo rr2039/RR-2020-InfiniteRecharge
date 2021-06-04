@@ -2,7 +2,6 @@ package frc.robot;
 
 public class Button {
 
-    //private JoystickButton toggleButton;
     public boolean state;
 
     // Button IDs
