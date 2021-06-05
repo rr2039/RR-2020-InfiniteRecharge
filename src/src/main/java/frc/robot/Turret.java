@@ -21,6 +21,7 @@ public class Turret {
     private static final double kP = 0.05;
     private static final double kI = 0;
     private static final double kD = 0;
+    public double shooterSpeed = 0.5;
 
     Solenoid raiseSolenoid = new Solenoid(2);
     Solenoid lowerSolenoid = new Solenoid(3);
@@ -93,10 +94,17 @@ public class Turret {
     public double degreesToQuadrature(double degrees) {
         return (degrees/360)*4096*gearRatio;
     }
+    public void setShooterSpeed(double speed) {
+        shooterSpeed = speed;
+    }
 
-    public void shooterSpeed(double speed) {
-        leftShooter.set(speed);
-        rightShooter.set(speed);
-        SmartDashboard.putNumber("Shooter Speed", speed);
+    public void activate() {
+        leftShooter.set(shooterSpeed);
+        rightShooter.set(shooterSpeed);
+        SmartDashboard.putNumber("Shooter Speed", shooterSpeed);
+    }
+    public void deactivate() {
+        leftShooter.stopMotor();
+        rightShooter.stopMotor();
     }
 }
