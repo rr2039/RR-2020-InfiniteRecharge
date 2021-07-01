@@ -24,6 +24,7 @@ public class StateMachine {
     public boolean shoot;
     public Joystick operatorStick;
     public Timer timer;
+    public boolean autonomous;
 
     public StateMachine(Hopper hopper, Intake intake, Turret turret, Joystick stick) {
         this.hopperSystem = hopper;
@@ -39,10 +40,12 @@ public class StateMachine {
         this.sensorOuttakeShadow = sensorOuttakeBool;
         this.ballCount = 3;
         this.shoot = false;
+        this.autonomous = false;
         timer = new Timer();
     }
 
     public void update() {
+      // Sensor's data is retrieved and stored in boolean variables
         if (sensorIntake.getAverageVoltage() > 0.8) {
             sensorIntakeBool = true;
         } else {
@@ -53,7 +56,8 @@ public class StateMachine {
         } else {
             sensorOuttakeBool = false;
         }
-        
+      /* Temporary variable utilized to update Sensor variables in order to 
+      appropriately update the queueing system */
         if (sensorIntakeShadow != sensorIntakeBool) {
             if (sensorIntakeBool) {
               ballCount++;
@@ -68,7 +72,8 @@ public class StateMachine {
             }
             sensorOuttakeShadow = sensorOuttakeBool;
           }
-
+      /* Update the state of queueing system based upon how many balls are in
+         system */
         if (!shoot) {
           if (ballCount <= 0) {
             ballCount = 0;
@@ -79,13 +84,14 @@ public class StateMachine {
           }
           else { 
             currentState = RobotState.ARMED;
-            if (operatorStick.getRawButtonPressed(1)) { 
+            if (operatorStick.getRawButtonPressed(1) || autonomous) { 
               currentState = RobotState.SHOOT;
               shoot = true;
               timer.start(); 
             } 
           }
         }
+      // Based upon queuing system state, activate / deactivate proper systems
         switch(currentState) {
             case INIT:
               SmartDashboard.putString("RobotState", "Init");

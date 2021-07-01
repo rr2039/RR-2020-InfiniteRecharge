@@ -19,7 +19,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Timer;
 
 import frc.robot.Intake;
@@ -46,25 +45,18 @@ public class Robot extends TimedRobot {
 
   private CANSparkMax rightFrontMotor;
   private CANSparkMax rightBackMotor;
+
   private final Joystick driveStick = new Joystick(0);
   private final Joystick operatorJoy = new Joystick(1);
   DifferentialDrive driveTrain;
+
   private final Button button10 = new Button();
   private final Button buttonA = new Button();
-  Turret turret = new Turret(0.25);
-  private RobotState state = RobotState.INIT;
-  private AnalogInput sensorIntake = new AnalogInput(0);
-  private AnalogInput sensorOuttake = new AnalogInput(1);
-  private boolean sensorIntakeBool = false;
-  private boolean sensorIntakeShadow = sensorIntakeBool;
-  private boolean sensorOuttakeBool = false;
-  private boolean sensorOuttakeShadow = sensorOuttakeBool;
-  private int ballCount = 3;
-  private Timer timer = new Timer();
+
   private Timer autoTimer = new Timer();
-  private boolean shoot = false;
   public Hopper hopperSystem;
   public Intake intakeSystem;
+  public Turret turret;
   public StateMachine stateMachine;
 
   /**
@@ -90,6 +82,7 @@ public class Robot extends TimedRobot {
     driveTrain = new DifferentialDrive(leftDriveTrainGroup, rightDriveTrainGroup);
     hopperSystem = new Hopper(ID.QUEING, 2, operatorJoy, ID.FIRST_FEEDER, ID.SECOND_FEEDER);
     intakeSystem = new Intake(ID.INTAKE, 3, operatorJoy, 0, 1);
+    turret = new Turret(0.25);
     stateMachine = new StateMachine(hopperSystem, intakeSystem, turret, operatorJoy);
 
     UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture(0);
@@ -127,6 +120,7 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    stateMachine.autonomous = true;
     autoTimer.start();
   }
 
@@ -141,90 +135,7 @@ public class Robot extends TimedRobot {
         driveTrain.arcadeDrive(-0.5, 0);
       }
       else {
-        driveTrain.arcadeDrive(0, 0);
-        autoTimer.stop();
-        if (sensorIntake.getAverageVoltage() > 0.8) {
-          sensorIntakeBool = true;
-        }
-        else {
-          sensorIntakeBool = false;
-        }
-        if (sensorOuttake.getAverageVoltage() > 0.8) {
-          sensorOuttakeBool = true;
-        }
-        else {
-          sensorOuttakeBool = false;
-        }
-        if (sensorIntakeShadow != sensorIntakeBool) {
-          if (sensorIntakeBool) {
-            ballCount++;
-          }
-          sensorIntakeShadow = sensorIntakeBool;
-        }
-        if (sensorOuttakeShadow != sensorOuttakeBool) {
-          if (sensorOuttakeBool) {
-          }
-          if (!sensorOuttakeBool) {
-            ballCount--;
-          }
-          sensorOuttakeShadow = sensorOuttakeBool;
-        }
-        if (!shoot) {
-          if (ballCount <= 0) {
-            state = RobotState.INIT;
-          }
-          else if (!sensorOuttakeBool) {
-            state = RobotState.HOT;
-          }
-          else { 
-            state = RobotState.ARMED;
-            state = RobotState.SHOOT;
-            shoot = true;
-            timer.start();  
-          }
-        }
-        if (state == RobotState.INIT) {
-          SmartDashboard.putString("RobotState", "Init");
-          hopperSystem.activate();
-          ballCount = 0;
-          break;
-        }
-        else if (state == RobotState.HOT) {
-          SmartDashboard.putString("RobotState", "Hot");
-          hopperSystem.activate();
-          hopperSystem.feederBottomOn();
-        }
-        else if (state == RobotState.ARMED) {
-          SmartDashboard.putString("RobotState", "Armed");
-          if (ballCount < 2) {
-            hopperSystem.activate();
-            hopperSystem.feederBottomOff();
-          } 
-          else {
-            hopperSystem.deactivate();
-            intakeSystem.deactivate();
-            hopperSystem.feederBottomOff();
-          }
-        }
-        else if (state == RobotState.SHOOT) {
-          SmartDashboard.putString("RobotState", "Shoot");
-          hopperSystem.deactivate();
-          intakeSystem.deactivate();
-          hopperSystem.feederBottomOff();
-          turret.activate();
-          if (timer.get() >= 1.0) {
-            hopperSystem.feederBottomOn();
-            hopperSystem.feederTopOn();
-          }
-          if (timer.get() >= 2.0) {
-            turret.deactivate();
-            hopperSystem.feederBottomOff();
-            hopperSystem.feederTopOff();
-            shoot = false;
-            timer.stop();
-            timer.reset();
-          }
-        }
+        stateMachine.update();
       }
       break;
     case kDefaultAuto:
@@ -240,7 +151,11 @@ public class Robot extends TimedRobot {
       break;
     }
   }
-
+  @Override
+  public void teleopInit() {
+      // This is called once when the robot first enters teleoperated mode
+      stateMachine.autonomous = false;
+  }
   /**
    * This function is called periodically during operator control.
    */
@@ -292,7 +207,7 @@ public class Robot extends TimedRobot {
     
     stateMachine.update();
 
-    SmartDashboard.putNumber("Ball Count", ballCount);
+    SmartDashboard.putNumber("Ball Count", stateMachine.ballCount);
     SmartDashboard.putNumber("Left Shooter Speed", turret.getLeftShooterSpeed());
     SmartDashboard.putNumber("Right Shooter Speed", turret.getRightShooterSpeed());
     SmartDashboard.putNumber("Speed Dial", operatorJoy.getRawAxis(2)*50000);
