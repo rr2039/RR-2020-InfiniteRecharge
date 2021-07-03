@@ -17,14 +17,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.Timer;
 
-import frc.robot.Intake;
-import frc.robot.Hopper;
-import frc.robot.Button;
-import frc.robot.RobotState;
 
 
 /**
@@ -47,17 +40,10 @@ public class Robot extends TimedRobot {
   private CANSparkMax rightBackMotor;
 
   private final Joystick driveStick = new Joystick(0);
-  private final Joystick operatorJoy = new Joystick(1);
   DifferentialDrive driveTrain;
 
-  private final Button button10 = new Button();
   private final Button buttonA = new Button();
 
-  private Timer autoTimer = new Timer();
-  public Hopper hopperSystem;
-  public Intake intakeSystem;
-  public Turret turret;
-  public StateMachine stateMachine;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -80,14 +66,6 @@ public class Robot extends TimedRobot {
     SpeedControllerGroup rightDriveTrainGroup = new SpeedControllerGroup(rightFrontMotor, rightBackMotor);
 
     driveTrain = new DifferentialDrive(leftDriveTrainGroup, rightDriveTrainGroup);
-    hopperSystem = new Hopper(ID.QUEING, 2, operatorJoy, ID.FIRST_FEEDER, ID.SECOND_FEEDER);
-    intakeSystem = new Intake(ID.INTAKE, 3, operatorJoy, 0, 1);
-    turret = new Turret(0.25);
-    stateMachine = new StateMachine(hopperSystem, intakeSystem, turret, operatorJoy);
-
-    UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture(0);
-    camera1.setResolution(360, 240);
-    camera1.setFPS(15);
   }
 
   /**
@@ -120,8 +98,6 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
-    stateMachine.autonomous = true;
-    autoTimer.start();
   }
 
   /**
@@ -131,30 +107,11 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
     case kCustomAuto:
-     if (autoTimer.get() < 0.7){
-        driveTrain.arcadeDrive(-0.5, 0);
-      }
-      else {
-        stateMachine.update();
-      }
-      break;
-    case kDefaultAuto:
-    default:
-      if (autoTimer.get() < 7.0 && autoTimer.get() > 5.0){
-        driveTrain.arcadeDrive(0.5, 0);
-      }
-      else {
-        driveTrain.arcadeDrive(0, 0);
-        autoTimer.stop();
-        break;
-      }
-      break;
     }
   }
   @Override
   public void teleopInit() {
       // This is called once when the robot first enters teleoperated mode
-      stateMachine.autonomous = false;
   }
   /**
    * This function is called periodically during operator control.
@@ -171,47 +128,6 @@ public class Robot extends TimedRobot {
     } else if (!buttonA.state) {
       driveTrain.arcadeDrive(driveStick.getRawAxis(1), driveStick.getRawAxis(4));
     }
-
-    intakeSystem.update();
-    hopperSystem.update();
-
-    if (Math.abs(operatorJoy.getRawAxis(0)) > 0.5) {
-      turret.rotateByJoystick(operatorJoy.getRawAxis(0));
-    } else {
-      turret.rotateByJoystick(0);
-    }
-
-    /* Toggle Raise & Lower Turret */
-    if (operatorJoy.getRawButtonPressed(10)) {
-      button10.state = !button10.state;
-    }
-    if (button10.state) {
-      turret.raise();
-    } else if(!button10.state) {
-      turret.lower();
-    }
-    
-    /* Increment & Decrement Turret Speed */
-    if (operatorJoy.getRawButtonPressed(9)) {
-      turret.setShooterSpeed(turret.shooterSpeed + 0.1);
-    } else if (operatorJoy.getRawButtonPressed(8)) {
-      turret.setShooterSpeed(turret.shooterSpeed - 0.1);
-    }
-
-    /* Manual Shoot Override */
-    if (operatorJoy.getRawButtonPressed(1)) { 
-      stateMachine.currentState = RobotState.SHOOT;
-      stateMachine.shoot = true;
-      stateMachine.timer.start();
-    }
-    
-    stateMachine.update();
-
-    SmartDashboard.putNumber("Ball Count", stateMachine.ballCount);
-    SmartDashboard.putNumber("Left Shooter Speed", turret.getLeftShooterSpeed());
-    SmartDashboard.putNumber("Right Shooter Speed", turret.getRightShooterSpeed());
-    SmartDashboard.putNumber("Speed Dial", operatorJoy.getRawAxis(2)*50000);
-    SmartDashboard.putBoolean("Reverse", buttonA.state);
   }
 
   
