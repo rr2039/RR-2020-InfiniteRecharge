@@ -5,9 +5,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import frc.robot.Hopper;
-import frc.robot.Intake;
-import frc.robot.RobotState;
+//import frc.robot.Hopper;
+//import frc.robot.Intake;
+//import frc.robot.RobotState;
 
 public class StateMachine {
     public Hopper hopperSystem;

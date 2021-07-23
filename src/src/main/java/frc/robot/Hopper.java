@@ -3,7 +3,7 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Subsystem;
+//import frc.robot.Subsystem;
 
 public class Hopper extends Subsystem { 
     public WPI_TalonSRX feederMotorTop;
