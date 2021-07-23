@@ -6,7 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import frc.robot.ID;
+//import frc.robot.ID;
 
 public class Turret {
     private double rotationMultiplier;
@@ -76,7 +76,7 @@ public class Turret {
     }
 
     public int getTurretRotation() {
-        return (rotationMotor.getSelectedSensorPosition()/4096)*360;
+        return (int) ((rotationMotor.getSelectedSensorPosition()/4096)*360);
     }
 
     public double getLeftShooterSpeed() {

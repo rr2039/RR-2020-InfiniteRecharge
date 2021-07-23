@@ -3,7 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Subsystem;
+//import frc.robot.Subsystem;
 
 public class Intake extends Subsystem {
     public Solenoid extendIntakeSolenoid;

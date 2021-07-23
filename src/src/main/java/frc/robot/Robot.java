@@ -21,10 +21,10 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Timer;
 
-import frc.robot.Intake;
-import frc.robot.Hopper;
-import frc.robot.Button;
-import frc.robot.RobotState;
+//import frc.robot.Intake;
+//import frc.robot.Hopper;
+//import frc.robot.Button;
+//import frc.robot.RobotState;
 
 
 /**
@@ -199,7 +199,7 @@ public class Robot extends TimedRobot {
     }
 
     /* Manual Shoot Override */
-    if (operatorJoy.getRawButtonPressed(1)) { 
+    if (operatorJoy.getRawButtonPressed(Button.B)) { 
       stateMachine.currentState = RobotState.SHOOT;
       stateMachine.shoot = true;
       stateMachine.timer.start();
